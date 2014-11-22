@@ -1,0 +1,68 @@
+Predicting Weight Lifting Form
+================================
+
+#Executive Summary
+Biometric tools are becoming more prevalent as more smart devices such as smartphones and smart watches and wristbands become available in the market.  In this exercise, the goal is to come up with a model that predicts whether or not someone has correctly lifted a dumbbell.  The model has an expected accuracy of 97.7% with a 95% CI of 97.4% and 97.9%.  The model was able to predict the test set with 100% accuracy.
+
+#Data Summary/Data Munging
+The training set consisted of 19622 observations, test set had 20.  There were 160 variables in each.  The classe function represents how the Unilateral Dumbbell Biceps Curls were performed:  (Class A) exactly according to the specification, (Class B) throwing the elbows to the front, (Class C) lifting the dumbbell only halfway, (Class D) lowering the dumbbell only halfway, (Class D) throwing the hips to the front.
+
+For both the training and test set, the first 7 columns were removed, as those were time variables and subjects, which did not have much bearing on the prediction.  Columns with that were of at least 95% NA values were removed from the training set.  The nearZeroVar function was used to removed those fields with little variance.
+Download file
+```{r}
+library(caret)
+fileUrl <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+download.file(fileUrl,destfile="training.csv")
+training <- read.csv('training.csv', header=TRUE)
+
+fileUrl <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+download.file(fileUrl,destfile="testing.csv")
+testing <- read.csv('testing.csv', header=TRUE)
+
+
+#remove first 7 columns
+training <- training[,- c(1:7)]
+testing <- testing[,- c(1:7)]
+
+#remove columns with 95% NA's
+training <- training[,colSums(is.na(training))<(.95*nrow(training))]
+#remove near zero variances
+training <- training[,-nearZeroVar(training)]
+```
+
+From the training set, a training subset and a cross validation subset were created.  Because of limited computing power, the training subset consisted of 20% of the original training set, and the cross validation set was 80% of the original training set.  
+
+```{r}
+#create a subtraining set
+set.seed(8659)
+inTrain <- createDataPartition(y=training$classe,
+                              p=0.2, list=FALSE)
+trainingsubset <- training[inTrain,]
+cvsubset <- training[-inTrain,]
+
+
+```
+
+
+Using the caret package, a random forest was run to predict classe in the training set.
+```{r, cache = T}
+#Fit random forest
+set.seed(1258)
+modFit2 <- train(classe~ .,data = trainingsubset, method = "rf", prox=TRUE)
+```
+
+We now run the random forest on the cross validation set.  The model had a 97.6% accuracy rate with a 95% confidence interval of 97.4% and 97.9%.  This would be our expected out of sample accuracy rate.
+
+The model was also run on the test set, where it had 100% accuracy.  
+```{r}
+#Predict functions
+PredictCrossVal <- predict(modFit2,cvsubset[,-53])
+confusionMatrix(cvsubset[,53],PredictCrossVal)
+
+PredictTesting <- predict(modFit2,testing)
+```
+
+#Conclusion
+Using the random forest model resulted in a prediction model of high accuracy, both in our cross validation set and test set.  Eventually, a prediction model of this variety could help a subject be informed of faults in exercise form in an automated fashion.
+
+
