@@ -2,7 +2,7 @@ Predicting Weight Lifting Form
 ================================
 
 #Executive Summary
-Biometric tools are becoming more prevalent as more smart devices such as smartphones and smart watches and wristbands become available in the market.  In this exercise, the goal is to come up with a model that predicts whether or not someone has correctly lifted a dumbbell.  The model has an expected accuracy of 97.7% with a 95% CI of 97.4% and 97.9%.  The model was able to predict the test set with 100% accuracy.
+Biometric tools are becoming more prevalent as more smart devices such as smartphones and smart watches and wristbands become available in the market.  In this exercise, the goal is to come up with a model that predicts whether or not someone has correctly lifted a dumbbell.  The model has an expected accuracy of 97.8% with a 95% confidence interval of 97.5% and 98.0%.  The model was able to predict the test set with 100% accuracy.
 
 #Data Summary/Data Munging
 The training set consisted of 19622 observations, test set had 20.  There were 160 variables in each.  The classe function represents how the Unilateral Dumbbell Biceps Curls were performed:  (Class A) exactly according to the specification, (Class B) throwing the elbows to the front, (Class C) lifting the dumbbell only halfway, (Class D) lowering the dumbbell only halfway, (Class D) throwing the hips to the front.
@@ -44,14 +44,14 @@ cvsubset <- training[-inTrain,]
 ```
 
 
-Using the caret package, a random forest was run to predict classe in the training set.
+Using the caret package, a random forest was run to predict classe in the tra97.8% accuracy rate with a 95% confidence interval of 97.5% and 98.0%.  This wouining set.
 ```{r, cache = T}
 #Fit random forest
 set.seed(1258)
 modFit2 <- train(classe~ .,data = trainingsubset, method = "rf", prox=TRUE)
 ```
 
-We now run the random forest on the cross validation set.  The model had a 97.6% accuracy rate with a 95% confidence interval of 97.4% and 97.9%.  This would be our expected out of sample accuracy rate.
+We now run the random forest on the cross validation set.  The model had a ld be our expected out of sample accuracy rate.
 
 The model was also run on the test set, where it had 100% accuracy.  
 ```{r}
